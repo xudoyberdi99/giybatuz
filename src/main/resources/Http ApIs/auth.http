@@ -1,0 +1,9 @@
+### Reistration
+POST localhost:8080/auth/registration
+Content-Type: application/json
+
+{
+  "name":"Asl",
+  "username":"jahon@gmail.com",
+  "password":"123456"
+}
