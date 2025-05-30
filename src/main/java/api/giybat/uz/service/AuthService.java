@@ -6,6 +6,7 @@ import api.giybat.uz.enums.GeneralStatus;
 import api.giybat.uz.enums.UserRoles;
 import api.giybat.uz.exps.AppBadException;
 import api.giybat.uz.repository.ProfileRepository;
+import api.giybat.uz.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -55,7 +56,8 @@ public class AuthService {
         return "Registred Successfully";
     }
 
-    public String regVerification(Integer profileId) {
+    public String regVerification(String token) {
+        Integer profileId = JwtUtil.regVerifToken(token);
         ProfileEntity profile = profileService.getProfile(profileId);
         if (profile.getGenstatus().equals(GeneralStatus.IN_REGISTRATION)){
             profileRepository.changeStatus(profileId, GeneralStatus.ACTIVE);
