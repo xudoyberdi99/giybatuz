@@ -14,7 +14,8 @@ import org.springframework.stereotype.Service;
 public class EmailSendingService {
     @Value("${spring.mail.username}")
      private String fromAccount;
-
+    @Value("${server.domain}")
+    private String serverDomain;
     @Autowired
     private JavaMailSender javaMailSender;
 
@@ -24,7 +25,7 @@ public class EmailSendingService {
                 "    <h1>Compilite Registration</h1>\n" +
                 "    <p>Salom Yaxshimisz</p>\n" +
                 "    <p> linkni bosish orqali siz tasdiqlaysz email sizga tegishli ekanligini\n" +
-                "        <a href=\"http://localhost:8080/auth/registration/verification/%s\"\n" +
+                "        <a href=\"%s/auth/registration/verification/%s\"\n" +
                 "           target=\"_blank\"\n" +
                 "           style=\"background-color: green; padding: 10px; margin: 5px;\">\n" +
                 "            click here\n" +
@@ -32,7 +33,7 @@ public class EmailSendingService {
                 "    </p>\n" +
                 "\n" +
                 "</body>";
-        body=String.format(body, JwtUtil.encode(profileId));
+        body=String.format(body,serverDomain, JwtUtil.encode(profileId));
 
       //  String body = " Emailni tasdiqlang linkni bosing "+ "http://localhost:8080/auth/registration/verification/" + profileId;
         sendMimeEmail(email, subject, body);
