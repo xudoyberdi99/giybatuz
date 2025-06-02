@@ -10,15 +10,19 @@ import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class JwtUtil {
     private static final int tokenLiveTime = 1000 * 3600 * 24; // 1-day
     private static final String secretKey = "veryLongSecretmazgillattayevlasharaaxmojonjinnijonsurbetbekkiydirhonuxlatdibekloxovdangasabekochkozjonduxovmashaynikmaydagapchishularnioqiganbolsangizgapyoqaniqsizmazgi";
 
-    public static String encode(Integer id, UserRoles role) {
+    public static String encode(Integer id, List<UserRoles> roles) {
+        String strRoles=roles.stream().map(Enum::name).collect(Collectors.joining(","));
+
         Map<String, String> claims = new HashMap<>();
-        claims.put("role", role.toString());
+        claims.put("roles", strRoles);
         return Jwts
                 .builder()
                 .subject(String.valueOf(id))
