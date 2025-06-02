@@ -1,11 +1,14 @@
 package api.giybat.uz.service;
 
+import api.giybat.uz.dto.LoginDto;
+import api.giybat.uz.dto.ProfileDto;
 import api.giybat.uz.dto.RegistrationDto;
 import api.giybat.uz.entity.ProfileEntity;
 import api.giybat.uz.enums.GeneralStatus;
 import api.giybat.uz.enums.UserRoles;
 import api.giybat.uz.exps.AppBadException;
 import api.giybat.uz.repository.ProfileRepository;
+import api.giybat.uz.repository.ProfileRoleRepository;
 import api.giybat.uz.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -27,6 +30,8 @@ public class AuthService {
     private EmailSendingService emailSendingService;
     @Autowired
     private ProfileService profileService;
+    @Autowired
+    private ProfileRoleRepository profileRoleRepository;
 
     public String registration(RegistrationDto profiledto){
 
@@ -64,5 +69,28 @@ public class AuthService {
             return "Verefication Successfully";
         }
         throw new AppBadException("Verification Failed");
+    }
+
+    public ProfileDto login(LoginDto logindto) {
+        Optional<ProfileEntity> byUsernameAndVisibleTrue = profileRepository.findByUsernameAndVisibleTrue(logindto.getUsername());
+        if(byUsernameAndVisibleTrue.isEmpty()){
+            throw new AppBadException("Username or password is wrong");
+        }
+        ProfileEntity profile = byUsernameAndVisibleTrue.get();
+        if (!bCryptPasswordEncoder.matches(logindto.getPassword(), profile.getPassword())){
+            throw new AppBadException("Username or password is wrong");
+        }
+        if (!profile.getGenstatus().equals(GeneralStatus.ACTIVE)){
+            throw new AppBadException("Wrong status");
+        }
+
+        //Response
+        ProfileDto response = new ProfileDto();
+        response.setUsername(profile.getUsername());
+        response.setName(profile.getName());
+        response.setRoleList(profileRoleRepository.gitAllRoleListProfileId(profile.getId()));
+        //JWT
+
+        return null;
     }
 }

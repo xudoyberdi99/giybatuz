@@ -1,4 +1,5 @@
 package api.giybat.uz.util;
+import api.giybat.uz.enums.UserRoles;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -14,6 +15,31 @@ import java.util.Map;
 public class JwtUtil {
     private static final int tokenLiveTime = 1000 * 3600 * 24; // 1-day
     private static final String secretKey = "veryLongSecretmazgillattayevlasharaaxmojonjinnijonsurbetbekkiydirhonuxlatdibekloxovdangasabekochkozjonduxovmashaynikmaydagapchishularnioqiganbolsangizgapyoqaniqsizmazgi";
+
+    public static String encode(Integer id, UserRoles role) {
+        Map<String, String> claims = new HashMap<>();
+        claims.put("role", role.toString());
+        return Jwts
+                .builder()
+                .subject(String.valueOf(id))
+                .claims(claims)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + (60*60*1000)))
+                .signWith(getSignInKey())
+                .compact();
+    }
+
+    public static Integer decode(String token) {
+        Claims claims = Jwts
+                .parser()
+                .verifyWith(getSignInKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+            Integer id = Integer.valueOf(claims.getSubject());
+            UserRoles role=UserRoles.valueOf(String.valueOf(claims.get("role")));
+        return  id;
+    }
 
     public static String encode(Integer id) {
         return Jwts
